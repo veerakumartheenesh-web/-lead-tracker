@@ -413,12 +413,14 @@ let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 
 // ── Supabase ─────────────────────────────────────────────────────────
 async function api(path,method='GET',body){
-  const opts={method,headers:H};
+  const opts={method,headers:{...H}};
   if(body) opts.body=JSON.stringify(body);
   const r=await fetch(SUPABASE_URL+path,opts);
   if(!r.ok){const t=await r.text();throw new Error(t);}
   if(method==='DELETE')return;
-  return r.json();
+  const txt=await r.text();
+  if(!txt||!txt.trim())return{};
+  try{return JSON.parse(txt);}catch(e){return{};}
 }
 
 async function loadLeads(){
@@ -898,3 +900,4 @@ loadLeads();
 </body>
 </html>
 
+ 
